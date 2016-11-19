@@ -1,7 +1,8 @@
 ##
 ## Comparison of the linear and the quadratic implementation of the Euler
 ## Tranform, applied to finding decimals of pi.
-## For details on the algorithm, see _BLOG LINK_
+## For details on the algorithm, see 
+## https://rmj86.github.io/blog/2016/11/19/euler-transform-in-linear-time
 ##
 
 from decimal import *
