@@ -1,20 +1,20 @@
 ##
 ## Comparison of the linear and the quadratic implementation of the Euler
 ## Tranform, applied to finding decimals of pi.
-## For details on the algorithm, see 
+## For details on the algorithm, see
 ## https://rmj86.github.io/blog/2016/11/19/euler-transform-in-linear-time
 ##
 
 from decimal import *
 
-def pi_series(n):
+def leibniz_pi(n):
     """ return the first n terms in leibnit's seies for pi
         (alternating sign) """
     elems = [(-1)**i * Decimal(4)/Decimal(2*i+1) for i in xrange(n)]
     return elems
 
 def _nabla(series, n):
-    """ nth term in euler transform of series. Use to estimate precision. 
+    """ nth term in euler transform of series. Use to estimate precision.
         Provided that the terms decrease quick enough, the error in
         partialT(series, n) will be no larger than _nabla(series, n)."""
     nab = Decimal(0)
@@ -27,8 +27,8 @@ def _nabla(series, n):
 
 def next_pasc_row(r):
     next_row = [1]
-    for a,b in zip(r, r[1:]):
-        next_row.append(a+b)
+    for i in range(len(r)-1):
+        next_row.append( r[i]+r[i+1] )
     next_row.append(1)
     return next_row
 
@@ -43,22 +43,22 @@ def partialT(series, n):
         pasc_row = next_pasc_row(pasc_row)
     s = sum(reversed(terms))
     return s
-    
+
 
 ################################################################################
 ## simplified formula    O(n)
 
 def pasc_row_lin(n):
-    b = Decimal(1)
+    b = 1
     row = [b]
     for i in range(n):
-        b *= Decimal(n-i) / Decimal(i+1)
+        b = (b*(n-i)) / (i+1)
         row.append(b)
     return row
 
 def et_consts(n):
     """ constant terms for the nth partial sum of the simplified ET formula """
-    c = Decimal(2**(n+1))
+    c = 2**(n+1)
     consts = []
     for b in pasc_row_lin(n+1):
         c -= b
@@ -71,17 +71,19 @@ def partialT_lin(series, n):
         sum += a*c
     return sum / Decimal(2**(n+1))
 
+
 ################################################################################
 
 if __name__ == "__main__":
     from time import time
-    
+
     # We get roughly 105 digits of precision for every
     # 350 terms of the series. (empirical for  n_terms <= 1000)
-    n_terms = 1 * 350
-    getcontext().prec = 1 * 110  # set precision of decimal arithmetic
-    
-    series = pi_series(n_terms+2)
+    n = 1
+    n_terms = n*350
+    getcontext().prec = n*100+10  # set precision of decimal arithmetic
+
+    series = leibniz_pi(n_terms+2)
 
     # print _nabla(series, n_terms)  ## expected error, roughly
 
@@ -92,9 +94,10 @@ if __name__ == "__main__":
     print "Using linear formula:"
     print partialT_lin(series, n_terms)
     print "time: {}".format(time() - t0)
+    print
 
     t0 = time()
     print "Using quadratic formula:"
     print partialT(series, n_terms)
     print "time: {}".format(time() - t0)
-    print
+
