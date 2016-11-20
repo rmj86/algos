@@ -8,7 +8,7 @@
 from decimal import *
 
 def leibniz_pi(n):
-    """ return the first n terms in leibnit's seies for pi
+    """ return the first n terms in Leibniz's seies for pi
         (alternating sign) """
     elems = [(-1)**i * Decimal(4)/Decimal(2*i+1) for i in xrange(n)]
     return elems
@@ -33,6 +33,7 @@ def next_pasc_row(r):
     return next_row
 
 def partialT(series, n):
+    """ nth partial sum of series' Euler Transform. O(n^2) """
     terms = []
     pasc_row = [1]
     for k in xrange(0,n+1):
@@ -49,6 +50,7 @@ def partialT(series, n):
 ## simplified formula    O(n)
 
 def pasc_row_lin(n):
+    """ Row n of pascal's triangle. O(n) """
     b = 1
     row = [b]
     for i in range(n):
@@ -66,6 +68,7 @@ def et_consts(n):
     return consts[:-1]
 
 def partialT_lin(series, n):
+    """ nth partial sum of series' Euler Transform. O(n) """
     sum = Decimal(0)
     for a,c in reversed(zip(series, et_consts(n))):
         sum += a*c
@@ -79,25 +82,24 @@ if __name__ == "__main__":
 
     # We get roughly 105 digits of precision for every
     # 350 terms of the series. (empirical for  n_terms <= 1000)
-    n = 1
-    n_terms = n*350
-    getcontext().prec = n*100+10  # set precision of decimal arithmetic
+    digits = 100
+    n_terms = int(digits*3.5)
+    getcontext().prec = digits+10  # set precision of decimal arithmetic
 
     series = leibniz_pi(n_terms+2)
 
-    # print _nabla(series, n_terms)  ## expected error, roughly
 
     print "Calculating pi via Euler Transform on leibniz's formula,"
-    print "pi = 1 - 1/3 + 1/5 - 1/7 + ..."
-
+    print "pi = 1 - 1/3 + 1/5 - 1/7 + ... \n"
+    # print "{} terms, expected error {:.5e}\n".format(n_terms, 10*_nabla(series, n_terms))
+    
     t0 = time()
     print "Using linear formula:"
     print partialT_lin(series, n_terms)
-    print "time: {}".format(time() - t0)
-    print
-
+    print "time: {}\n".format(time() - t0)
+    
     t0 = time()
     print "Using quadratic formula:"
     print partialT(series, n_terms)
-    print "time: {}".format(time() - t0)
-
+    print "time: {}\n".format(time() - t0)
+    
